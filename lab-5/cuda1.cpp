@@ -28,8 +28,8 @@ void vecAdd(float* A, float* B, float* C, int n)
     B = (double*)malloc(size);
     C = (double*)malloc(size);
     for( int i = 0; i < n; i++ ) {
-        A[i] = sin(i)*sin(i);
-        B[i] = cos(i)*cos(i);
+        A[i] = sin(i)*cos(i);
+        B[i] = sin(i)*sin(i);
     }
 
     float *d_A, *d_B, *d_C;
@@ -56,7 +56,6 @@ void  main()
     // Host input vectors
     double *h_a;
     double *h_b;
-    //Host output vector
     double *h_c;
 
     vecAdd(h_a, h_b, h_c);
