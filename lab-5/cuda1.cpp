@@ -7,7 +7,7 @@
 using namespace std;
 
 
-_ _global_ _
+__global__
 void vecAddKernel(float* A, float* B, float* C, int n)
 {
     int i = threadIdx.x + blockDim.x * blockIdx.x;
@@ -16,7 +16,7 @@ void vecAddKernel(float* A, float* B, float* C, int n)
 
 void print_vec(float* vector, int size)
 {
-    for(int i=0; i<n; i++)
+    for(int i=0; i<size; i++)
         cout << vector[i] << " ";
     cout<<endl;
 }
@@ -24,9 +24,9 @@ void print_vec(float* vector, int size)
 void vecAdd(float* A, float* B, float* C, int n)
 {
     int size = n * sizeof(float);
-    A = (double*)malloc(size);
-    B = (double*)malloc(size);
-    C = (double*)malloc(size);
+    A = (float*)malloc(size);
+    C = (float*)malloc(size);
+    B = (float*)malloc(size);
     for( int i = 0; i < n; i++ ) {
         A[i] = sin(i)*cos(i);
         B[i] = sin(i)*sin(i);
@@ -38,25 +38,33 @@ void vecAdd(float* A, float* B, float* C, int n)
     cudaMemcpy(d_A, A, size, cudaMemcpyHostToDevice);
 
     cudaMalloc((void **) &d_B, size);
-    ccudaMemcpy(d_B, B, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, B, size, cudaMemcpyHostToDevice);
 
     cudaMalloc((void **) &d_C, size);
-    vecAddKernel<<<ceil(n/2560), 256>>> vecAddKernel<<<ceil(n/2560), 256>>>(d_A, d_B, d_C, n); (d_A, d_B, d_C, n);
+    int blockSize, gridSize;
+ 
+    // Number of threads in each thread block
+    blockSize = 1024;
+ 
+    // Number of thread blocks in grid
+    gridSize = (int)ceil((float)n/blockSize);
+    vecAddKernel<<<gridSize, blockSize>>>(d_A, d_B, d_C, n);
     cudaMemcpy(C, d_C, size, cudaMemcpyDeviceToHost);
     // Free device memory for A, B, C
-    cudaFree(d_Ad); cudaFree(d_B); cudaFree (d_C);
+    cudaFree(d_A); cudaFree(d_B); cudaFree (d_C);
     print_vec(C, size);
 }
 
-void  main()
+int main()
 {
     // Size of vectors
-    int n = 100000;
+    int n = 50;
  
     // Host input vectors
-    double *h_a;
-    double *h_b;
-    double *h_c;
+    float* h_a;
+    float* h_b;
+    float* h_c;
 
-    vecAdd(h_a, h_b, h_c);
+    vecAdd(h_a, h_b, h_c, n);
+    return 0;
 }

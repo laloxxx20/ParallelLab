@@ -13,11 +13,11 @@ void initArray(float* vec, int n) {
         vec[i] = rand() % 9 + 1;
 }
 
-void initMat(float* mat, int n, int m) {
+void initMat(float* mat, int n) {
     int i, j;
     for(i=0; i<n; i++)
-        for(j=0; j<m; j++)
-            mat[i*m+j] = rand() % 9 + 1;
+        for(j=0; j<n; j++)
+            mat[i*n+j] = rand() % 9 + 1;
 }
 
 void printVec(float* vector, int size)
@@ -68,7 +68,7 @@ void mulVecMat(float* vec, float* mat, int n){
     cudaMemcpy(dev_a, a, sizeof(float)*n, cudaMemcpyHostToDevice);
     cudaMemcpy(dev_b, b, sizeof(float)*n*n, cudaMemcpyHostToDevice);
 
-    mulKernel<<<ceil(n/2560, 256>>>(dev_a, dev_b, dev_c, n);
+    mulKernel<<<ceil(n/2560), 256>>>(dev_a, dev_b, dev_c, n);
 
     cudaMemcpy(c, dev_c, sizeof(float)*n, cudaMemcpyDeviceToHost);
 
